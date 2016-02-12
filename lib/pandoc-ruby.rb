@@ -4,14 +4,14 @@ require 'tempfile'
 class PandocRuby
   @@bin_path = nil
   @@allow_file_paths = false
-  
+
   EXECUTABLES = %W[
     pandoc
     markdown2pdf
     html2markdown
     hsmarkdown
   ]
-  
+
   READERS = {
     'native'          => 'pandoc native',
     'json'            => 'pandoc JSON',
@@ -55,15 +55,15 @@ class PandocRuby
     'epub'  => 'EPUB V2',
     'epub3' => 'EPUB V3'
   }
-  
+
   def self.bin_path=(path)
     @@bin_path = path
   end
-  
+
   def self.allow_file_paths=(value)
     @@allow_file_paths = value
   end
-  
+
   def self.convert(*args)
     new(*args).convert
   end
@@ -103,7 +103,7 @@ class PandocRuby
     end
   end
   alias_method :to_s, :convert
-  
+
   class << self
     READERS.each_key do |r|
       define_method(r) do |*args|
@@ -112,35 +112,31 @@ class PandocRuby
       end
     end
   end
-  
+
   WRITERS.merge(BINARY_WRITERS).each_key do |w|
     define_method(:"to_#{w}") do |*args|
       args += [{:to => w.to_sym}]
       convert(*args)
     end
   end
-  
+
 private
 
   def execute_file(command, options)
     output = ''
-    puts "Pandoc call:"
-    puts (command + " " + @file_path + options)
-    Open3::popen3(command + " " + @file_path + options) do |stdin, stdout, stderr| 
+    Open3::popen3(command + " " + @file_path + options) do |stdin, stdout, stderr|
       stdin.close
-      output = stdout.read 
+      output = stdout.read
     end
-    puts "Output:"
-    puts output
     output
   end
 
   def execute(command)
     output = ''
-    Open3::popen3(command) do |stdin, stdout, stderr| 
-      stdin.puts @target 
+    Open3::popen3(command) do |stdin, stdout, stderr|
+      stdin.puts @target
       stdin.close
-      output = stdout.read 
+      output = stdout.read
     end
     output
   end
@@ -154,7 +150,7 @@ private
       end
     end
   end
-  
+
   def convert_opts_with_args(opt)
     opt.inject('') do |string, (flag, val)|
       flag = flag.to_s.gsub(/_/, '-')
@@ -168,7 +164,7 @@ private
         opt.each_pair do |opt_key, opt_value|
           if opt_key == :from && opt_value.to_s == "docx"
             return true
-          end 
+          end
         end
       end
     end
@@ -181,7 +177,7 @@ private
         opt.each_pair do |opt_key, opt_value|
           if opt_key == :to && BINARY_WRITERS.keys.include?(opt_value.to_s)
             return true
-          end 
+          end
         end
       end
     end
