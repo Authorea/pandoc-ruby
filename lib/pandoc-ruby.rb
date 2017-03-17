@@ -1,4 +1,5 @@
 require 'open3'
+require 'ostruct'
 require 'tempfile'
 require 'timeout'
 
@@ -63,6 +64,11 @@ class PandocRuby
     @@pandoc_path = path
   end
 
+  # Exactly the same `::convert`, except returns an OpenStruct with keys :stdout, :result
+  def self.convert_verbose(*args)
+    new(*args).convert_verbose
+  end
+
   # A shortcut method that creates a new PandocRuby object and immediately
   # calls `#convert`. Options passed to this method are passed directly to
   # `#new` and treated the same as if they were passed directly to the
@@ -123,7 +129,7 @@ class PandocRuby
   #
   #   PandocRuby.new("# text").convert
   #   # => "<h1 id=\"text\">text</h1>\n"
-  def convert(*args)
+  def convert_verbose(*args)
     self.options += args if args
     self.option_string = prepare_options(self.options)
     if self.binary_output
@@ -131,6 +137,21 @@ class PandocRuby
     else
       convert_string
     end
+  end
+
+  # Run the conversion. The convert method can take any number of arguments,
+  # which will be converted to pandoc options. If options were already
+  # specified in an initializer or reader method, they will be combined with
+  # any that are passed to this method.
+  #
+  # Returns a string with the converted content.
+  #
+  # Example:
+  #
+  #   PandocRuby.new("# text").convert
+  #   # => "<h1 id=\"text\">text</h1>\n"
+  def convert(*args)
+    self.convert_verbose(*args).result
   end
   alias to_s convert
 
@@ -171,14 +192,17 @@ class PandocRuby
 
     # Execute the pandoc command for binary writers. A temp file is created
     # and written to, then read back into the program as a string, then the
-    # temp file is closed and unlinked.
+    # temp file is closed and unlinked. Returns an OpenStruct with :stdout
+    # and :result
     def convert_binary
       tmp_file = Tempfile.new('pandoc-conversion')
       begin
         self.options += [{ :output => tmp_file.path }]
         self.option_string = "#{self.option_string} --output #{tmp_file.path}"
-        execute_pandoc
-        return IO.binread(tmp_file)
+        output = OpenStruct.new
+        output.stdout = execute_pandoc
+        output.result = IO.binread(tmp_file)
+        return output
       ensure
         tmp_file.close
         tmp_file.unlink
