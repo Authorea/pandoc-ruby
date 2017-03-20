@@ -1,19 +1,26 @@
-sudo: required
+sudo: false
+
+cache:
+  directories:
+  - $HOME/.stack
+
+addons:
+  apt:
+    packages:
+      - libgmp-dev
 
 language: ruby
 before_install:
   - mkdir -p ~/.local/bin
-  - export PATH=$(readlink -f ~/.local/bin):$PATH
-  - curl -sL https://www.stackage.org/stack/linux-x86_64 | tar xz --wildcards --strip-components=1 -C ~/.local/bin '*/stack'
-  - git clone https://github.com/Authorea/pandoc.git
-  - cd pandoc
-  - git checkout master
-  - git submodule init
-  - git submodule update --recursive
-  - stack update
-  - stack setup
-  - stack test
-  - stack install
-  - cd ..
+  - export PATH=$HOME/.local/bin:$PATH
+  - cat 'export PATH=$HOME/.local/bin:$PATH' >> ~/.bash_profile
+  - travis_retry curl -L https://www.stackage.org/stack/linux-x86_64 | tar xz --wildcards --strip-components=1 -C $HOME/.local/bin '*/stack'
+  - git clone https://github.com/Authorea/pandoc.git $HOME/pandoc
+  - (cd $HOME/pandoc && git checkout master)
+  - (cd $HOME/pandoc && git submodule init)
+  - (cd $HOME/pandoc && git submodule update --recursive)
+  - (cd $HOME/pandoc && stack update)
+  - (cd $HOME/pandoc && stack setup)
+  - (cd $HOME/pandoc && stack install)
 rvm:
   - 2.3.1
