@@ -24,17 +24,10 @@ else
   travis_retry fetch_stack_linux
 fi
 
-case "$BUILD" in
-  stack)
-    # However, we only need stack to download GHC for stack builds.
-    travis_retry stack --no-terminal setup;
-    ;;
-  cabal)
+travis_retry stack --no-terminal setup;
 mkdir -p $HOME/.cabal
 cat > $HOME/.cabal/config <<EOF
 remote-repo: hackage.haskell.org:http://hackage.fpcomplete.com/
 remote-repo-cache: $HOME/.cabal/packages
 jobs: \$ncpus
 EOF
-;;
-esac
