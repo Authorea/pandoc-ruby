@@ -13,14 +13,13 @@ language: ruby
 before_install:
   - mkdir -p ~/.local/bin
   - export PATH=$HOME/.local/bin:$PATH
-  - cat 'export PATH=$HOME/.local/bin:$PATH' >> ~/.bash_profile
   - travis_retry curl -L https://www.stackage.org/stack/linux-x86_64 | tar xz --wildcards --strip-components=1 -C $HOME/.local/bin '*/stack'
   - git clone https://github.com/Authorea/pandoc.git $HOME/pandoc
-  - (cd $HOME/pandoc && git checkout master)
-  - (cd $HOME/pandoc && git submodule init)
-  - (cd $HOME/pandoc && git submodule update --recursive)
-  - (cd $HOME/pandoc && stack update)
-  - (cd $HOME/pandoc && stack setup)
-  - (cd $HOME/pandoc && stack install)
+  - (cd $HOME/pandoc && export PATH=$HOME/.local/bin:$PATH && git checkout master)
+  - (cd $HOME/pandoc && export PATH=$HOME/.local/bin:$PATH && git submodule init)
+  - (cd $HOME/pandoc && export PATH=$HOME/.local/bin:$PATH && git submodule update --recursive)
+  - (cd $HOME/pandoc && export PATH=$HOME/.local/bin:$PATH && stack update)
+  - (cd $HOME/pandoc && export PATH=$HOME/.local/bin:$PATH && stack setup)
+  - (cd $HOME/pandoc && export PATH=$HOME/.local/bin:$PATH && stack install)
 rvm:
   - 2.3.1
