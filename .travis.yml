@@ -1,6 +1,8 @@
+sudo: required
+
 language: ruby
 before_install:
-  - ./.travis-setup.sh
+  - curl -sL https://www.stackage.org/stack/linux-x86_64 | tar xz --wildcards --strip-components=1 -C ~/.local/bin '*/stack'
   - git clone https://github.com/Authorea/pandoc.git
   - cd pandoc
   - git checkout master
@@ -11,5 +13,6 @@ before_install:
   - stack test
   - stack install
   - export PATH=$(readlink -f ~/.local/bin):$PATH
+  - cd ..
 rvm:
   - 2.3.1
