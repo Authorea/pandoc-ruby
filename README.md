@@ -1,5 +1,7 @@
 # PandocRuby
 
+[![Build Status](https://travis-ci.org/Authorea/pandoc-ruby.svg?branch=master)](https://travis-ci.org/Authorea/pandoc-ruby)
+
 PandocRuby is a wrapper for [Pandoc](http://johnmacfarlane.net/pandoc/), a
 Haskell library with command line tools for converting one markup format to
 another.
