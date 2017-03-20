@@ -1,6 +1,15 @@
 language: ruby
 before_install:
-  - sudo apt-get -qq update
-  - sudo apt-get install -y pandoc
+  - git clone https://github.com/Authorea/pandoc.git
+  - cd pandoc
+  - git checkout master
+  - curl -sSL https://get.haskellstack.org/ | sh
+  - git submodule init
+  - git submodule update --recursive
+  - stack update
+  - stack setup
+  - stack test
+  - stack install
+  - export PATH=$(readlink -f ~/.local/bin):$PATH
 rvm:
   - 2.3.1
