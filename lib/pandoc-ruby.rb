@@ -118,17 +118,8 @@ class PandocRuby
     self.options = args
   end
 
-  # Run the conversion. The convert method can take any number of arguments,
-  # which will be converted to pandoc options. If options were already
-  # specified in an initializer or reader method, they will be combined with
-  # any that are passed to this method.
-  #
-  # Returns a string with the converted content.
-  #
-  # Example:
-  #
-  #   PandocRuby.new("# text").convert
-  #   # => "<h1 id=\"text\">text</h1>\n"
+  # Exactly the same as `#convert`, except returns an OpenStruct with
+  # the keys `:result` and `:stdout`
   def convert_verbose(*args)
     self.options += args if args
     self.option_string = prepare_options(self.options)
