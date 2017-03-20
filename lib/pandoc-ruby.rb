@@ -3,6 +3,7 @@ require 'tempfile'
 require 'timeout'
 
 class PandocRuby
+  attr_accessor :stdout, :stderr
 
   @@pandoc_path = 'pandoc'
 
@@ -201,7 +202,7 @@ class PandocRuby
 
     # Run the command and returns the output.
     def execute(command)
-      output = error = exit_status = nil
+      error = exit_status = nil
       @timeout ||= 31_557_600 # A year should be enough?
       Open3.popen3(command) do |stdin, stdout, stderr, wait_thr|
         begin
@@ -210,8 +211,9 @@ class PandocRuby
               stdin.puts @input_string
               stdin.close
             end
-            output = stdout.read
-            error = stderr.read
+            @stdout = stdout.read
+            @stderr = stderr.read
+            error = @stderr
             exit_status = wait_thr.value
           end
         rescue Timeout::Error => ex
@@ -222,7 +224,7 @@ class PandocRuby
       end
 
       raise error unless exit_status && exit_status.success?
-      output
+      @stdout
     end
 
     # Builds the option string to be passed to pandoc by iterating over the
